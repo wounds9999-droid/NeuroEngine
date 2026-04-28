@@ -1,12 +1,13 @@
 cmake_minimum_required(VERSION 3.22.1)
 project("neuro_engine")
 
-# توجيه المترجم لمجلد include الخاص بـ ncnn
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/ncnn/include)
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/ncnn/include/ncnn)
+# تحديد المسارات يدوياً لضمان الرؤية
+set(NCNN_DIR ${CMAKE_CURRENT_SOURCE_DIR}/ncnn)
+set(ncnn_DIR ${NCNN_DIR}/lib/cmake/ncnn)
 
-# تحديد مكان ملفات المكتبة الربط (lib)
-set(ncnn_DIR ${CMAKE_CURRENT_SOURCE_DIR}/ncnn/lib/cmake/ncnn)
+# إخبار CMake أين يجد ملفات الإعدادات
+list(APPEND CMAKE_PREFIX_PATH ${ncnn_DIR})
+
 find_package(ncnn REQUIRED)
 
 add_library(neuro_engine SHARED native-lib.cpp)

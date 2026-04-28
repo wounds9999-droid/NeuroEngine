@@ -10,6 +10,16 @@ jobs:
       with:
         java-version: '17'
         distribution: 'temurin'
+    - name: Install NDK & CMake
+      run: echo "y" | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --install "ndk;25.2.9519653" "cmake;3.22.1"
+    - name: Pre-setup NCNN
+      run: |
+        mkdir -p app/src/main/cpp/ncnn
+        cd app/src/main/cpp
+        wget https://github.com/Tencent/ncnn/releases/download/20231027/ncnn-20231027-android-vulkan.zip -O ncnn.zip
+        unzip -q ncnn.zip
+        # نقل المحتويات للمجلد اللي ينتظره CMake
+        cp -r ncnn-20231027-android-vulkan/* ncnn/
     - name: Build APK
       run: |
         chmod +x gradlew
