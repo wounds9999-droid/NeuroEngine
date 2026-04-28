@@ -10,20 +10,31 @@ jobs:
       with:
         java-version: '17'
         distribution: 'temurin'
-    - name: Install NDK & CMake
-      run: echo "y" | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --install "ndk;25.2.9519653" "cmake;3.22.1"
-    - name: Download NCNN Core
+    - name: JVM Memory Override & Thread Lock
+      run: |
+        mkdir -p ~/.gradle
+        echo "org.gradle.jvmargs=-Xmx6g -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8" > ~/.gradle/gradle.properties
+        echo "org.gradle.daemon=false" >> ~/.gradle/gradle.properties
+        echo "org.gradle.parallel=false" >> ~/.gradle/gradle.properties
+    - name: NCNN Vulkan Core Injection
       run: |
         cd app/src/main/cpp
         wget https://github.com/Tencent/ncnn/releases/download/20231027/ncnn-20231027-android-vulkan.zip -O ncnn.zip
         unzip -q ncnn.zip && rm ncnn.zip && mv ncnn-20231027-android-vulkan ncnn
-    - name: Nuclear Override - Manual Gradle 8.2 Injection
+    - name: Forensic Build Execution
       run: |
         wget https://services.gradle.org/distributions/gradle-8.2-bin.zip
         unzip -q gradle-8.2-bin.zip -d /tmp
-        /tmp/gradle-8.2/bin/gradle assembleDebug --stacktrace
-    - name: Upload APK
+        /tmp/gradle-8.2/bin/gradle assembleDebug --info > build_forensic_log.txt 2>&1
+    - name: Extract APK (On Success)
+      if: success()
       uses: actions/upload-artifact@v4
       with:
         name: NeuroEngine-App
         path: app/build/outputs/apk/debug/app-debug.apk
+    - name: Extract Core Dump (On Failure)
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: Crash-Log-Dump
+        path: build_forensic_log.txt
