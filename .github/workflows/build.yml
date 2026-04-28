@@ -17,10 +17,11 @@ jobs:
         cd app/src/main/cpp
         wget https://github.com/Tencent/ncnn/releases/download/20231027/ncnn-20231027-android-vulkan.zip -O ncnn.zip
         unzip -q ncnn.zip && rm ncnn.zip && mv ncnn-20231027-android-vulkan ncnn
-    - name: Build APK
+    - name: Failsafe Build Execution
       run: |
+        gradle wrapper --gradle-version 8.2
         chmod +x gradlew
-        ./gradlew assembleDebug
+        ./gradlew assembleDebug --stacktrace
     - name: Upload APK
       uses: actions/upload-artifact@v4
       with:
