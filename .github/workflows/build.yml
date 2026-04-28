@@ -1,35 +1,21 @@
-name: Dockerized NeuroEngine Build
+name: NeuroEngine Production Build
 on: [push]
 jobs:
   build:
     runs-on: ubuntu-latest
-    # استخدام حاوية معزولة تحتوي على كل أدوات الأندرويد مسبقاً
-    container:
-      image: minecrell/android-sdk:latest
     steps:
     - uses: actions/checkout@v4
-    
-    - name: Prepare Workspace & NCNN
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with: {java-version: '17', distribution: 'temurin'}
+    - name: Setup NDK & NCNN
       run: |
-        # تثبيت الـ unzip داخل الحاوية
-        apt-get update && apt-get install -y unzip wget
-        # تجهيز المكتبة في المسار المعزول
-        mkdir -p app/src/main/cpp/ncnn
+        echo "y" | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --install "ndk;25.2.9519653" "cmake;3.22.1"
         cd app/src/main/cpp
         wget https://github.com/Tencent/ncnn/releases/download/20231027/ncnn-20231027-android-vulkan.zip -O ncnn.zip
-        unzip -q ncnn.zip
-        cp -r ncnn-20231027-android-vulkan/* ncnn/
-        
-    - name: Execute Build Inside Container
-      run: |
-        # منح صلاحيات التشغيل وتجاوز فحص التراخيص
-        chmod +x gradlew
-        export ANDROID_HOME=/opt/android-sdk
-        yes | /opt/android-sdk/cmdline-tools/latest/bin/sdkmanager --licenses || true
-        ./gradlew assembleDebug --no-daemon
-        
-    - name: Export APK
+        unzip -q ncnn.zip && mv ncnn-20231027-android-vulkan ncnn
+    - name: Build APK
+      run: chmod +x gradlew && ./gradlew assembleDebug
+    - name: Upload
       uses: actions/upload-artifact@v4
-      with:
-        name: NeuroEngine-Docker-Build
-        path: app/build/outputs/apk/debug/app-debug.apk
+      with: {name: NeuroEngine-PRO, path: app/build/outputs/apk/debug/app-debug.apk}
