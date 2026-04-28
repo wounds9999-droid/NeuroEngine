@@ -10,7 +10,7 @@ jobs:
       with:
         java-version: '17'
         distribution: 'temurin'
-    - name: Install Android Components (NDK & CMake)
+    - name: Install Android Components
       run: |
         echo "y" | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --install "ndk;25.2.9519653" "cmake;3.22.1"
     - name: Inject Cloud Paths
@@ -22,14 +22,14 @@ jobs:
         cd app/src/main/cpp
         wget https://github.com/Tencent/ncnn/releases/download/20231027/ncnn-20231027-android-vulkan.zip -O ncnn.zip
         unzip -q ncnn.zip && rm ncnn.zip && mv ncnn-20231027-android-vulkan ncnn
-    - name: Execute Manual Gradle Build
+    - name: Execute Compiler
       run: |
         wget https://services.gradle.org/distributions/gradle-8.2-bin.zip
         unzip -q gradle-8.2-bin.zip -d /tmp
-        chmod +x /tmp/gradle-8.2/bin/gradle
-        /tmp/gradle-8.2/bin/gradle assembleDebug --stacktrace
-    - name: Upload APK
+        /tmp/gradle-8.2/bin/gradle assembleDebug
+    - name: Extract C++ Compiler Logs (On Failure)
       uses: actions/upload-artifact@v4
+      if: failure()
       with:
-        name: NeuroEngine-App
-        path: app/build/outputs/apk/debug/app-debug.apk
+        name: Ninja-CXX-Errors
+        path: app/.cxx/
