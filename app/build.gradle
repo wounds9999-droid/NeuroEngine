@@ -12,6 +12,7 @@ android {
         targetSdk 34
         versionCode 1
         versionName "1.0"
+
         externalNativeBuild {
             cmake {
                 cppFlags "-std=c++17"
@@ -19,14 +20,15 @@ android {
             }
         }
     }
-    buildTypes {
-        release {
-            minifyEnabled false
-        }
-    }
+
     externalNativeBuild {
         cmake {
             path "src/main/cpp/CMakeLists.txt"
         }
     }
+}
+
+dependencies {
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'com.google.android.material:material:1.9.0'
 }
