@@ -1,4 +1,4 @@
-name: NeuroEngine Final Build
+name: Final Guaranteed Build
 on: [push]
 jobs:
   build:
@@ -10,8 +10,12 @@ jobs:
       with:
         java-version: '17'
         distribution: 'temurin'
-    - name: Auto-Build APK
+    - name: Build APK
       run: |
         chmod +x gradlew
-        ./gradlew assembleDebug --stacktrace
- 
+        ./gradlew assembleDebug
+    - name: Upload APK
+      uses: actions/upload-artifact@v4
+      with:
+        name: NeuroEngine-Final
+        path: app/build/outputs/apk/debug/app-debug.apk

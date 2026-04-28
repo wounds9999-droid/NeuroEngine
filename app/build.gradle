@@ -8,27 +8,25 @@ android {
 
     defaultConfig {
         applicationId "com.neuro.engine"
-        minSdk 28
+        minSdk 24
         targetSdk 34
         versionCode 1
         versionName "1.0"
-        
         externalNativeBuild {
             cmake {
-                cppFlags "-std=c++17 -O3 -fno-rtti -fno-exceptions"
+                cppFlags "-std=c++17"
                 arguments "-DANDROID_STL=c++_shared"
             }
         }
     }
-
+    buildTypes {
+        release {
+            minifyEnabled false
+        }
+    }
     externalNativeBuild {
         cmake {
             path "src/main/cpp/CMakeLists.txt"
-            version "3.22.1"
         }
     }
-}
-
-dependencies {
-    implementation 'androidx.core:core-ktx:1.10.1'
 }
