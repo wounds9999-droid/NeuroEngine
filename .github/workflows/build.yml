@@ -19,7 +19,6 @@ jobs:
         unzip -q ncnn.zip && rm ncnn.zip && mv ncnn-20231027-android-vulkan ncnn
     - name: Build APK
       run: |
-        gradle wrapper --gradle-version 8.2
         chmod +x gradlew
         ./gradlew assembleDebug
     - name: Upload APK
