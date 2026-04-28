@@ -1,0 +1,51 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+3    package="com.neuro.engine"
+4    android:versionCode="1"
+5    android:versionName="1.0" >
+6
+7    <uses-sdk
+8        android:minSdkVersion="28"
+9        android:targetSdkVersion="34" />
+10
+11    <permission
+11-->[androidx.core:core:1.10.1] /root/.gradle/caches/transforms-3/fab6a810a26623ea2485d71c61dd0bd7/transformed/core-1.10.1/AndroidManifest.xml:22:5-24:47
+12        android:name="com.neuro.engine.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+12-->[androidx.core:core:1.10.1] /root/.gradle/caches/transforms-3/fab6a810a26623ea2485d71c61dd0bd7/transformed/core-1.10.1/AndroidManifest.xml:23:9-81
+13        android:protectionLevel="signature" />
+13-->[androidx.core:core:1.10.1] /root/.gradle/caches/transforms-3/fab6a810a26623ea2485d71c61dd0bd7/transformed/core-1.10.1/AndroidManifest.xml:24:9-44
+14
+15    <uses-permission android:name="com.neuro.engine.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
+15-->[androidx.core:core:1.10.1] /root/.gradle/caches/transforms-3/fab6a810a26623ea2485d71c61dd0bd7/transformed/core-1.10.1/AndroidManifest.xml:26:5-97
+15-->[androidx.core:core:1.10.1] /root/.gradle/caches/transforms-3/fab6a810a26623ea2485d71c61dd0bd7/transformed/core-1.10.1/AndroidManifest.xml:26:22-94
+16
+17    <application
+17-->/root/neuro_engine/app/src/main/AndroidManifest.xml:3:5-12:19
+18        android:allowBackup="true"
+18-->/root/neuro_engine/app/src/main/AndroidManifest.xml:4:9-35
+19        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+19-->[androidx.core:core:1.10.1] /root/.gradle/caches/transforms-3/fab6a810a26623ea2485d71c61dd0bd7/transformed/core-1.10.1/AndroidManifest.xml:28:18-86
+20        android:debuggable="true"
+21        android:extractNativeLibs="false"
+22        android:label="NeuroEngine" >
+22-->/root/neuro_engine/app/src/main/AndroidManifest.xml:5:9-36
+23        <activity
+23-->/root/neuro_engine/app/src/main/AndroidManifest.xml:6:9-11:20
+24            android:name="com.neuro.engine.MainActivity"
+24-->/root/neuro_engine/app/src/main/AndroidManifest.xml:6:19-47
+25            android:exported="true" >
+25-->/root/neuro_engine/app/src/main/AndroidManifest.xml:6:48-71
+26            <intent-filter>
+26-->/root/neuro_engine/app/src/main/AndroidManifest.xml:7:13-10:29
+27                <action android:name="android.intent.action.MAIN" />
+27-->/root/neuro_engine/app/src/main/AndroidManifest.xml:8:17-69
+27-->/root/neuro_engine/app/src/main/AndroidManifest.xml:8:25-66
+28
+29                <category android:name="android.intent.category.LAUNCHER" />
+29-->/root/neuro_engine/app/src/main/AndroidManifest.xml:9:17-77
+29-->/root/neuro_engine/app/src/main/AndroidManifest.xml:9:27-74
+30            </intent-filter>
+31        </activity>
+32    </application>
+33
+34</manifest>

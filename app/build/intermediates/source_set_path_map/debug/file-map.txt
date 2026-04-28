@@ -1,0 +1,11 @@
+com.neuro.engine.app-lifecycle-runtime-2.3.1-0 /root/.gradle/caches/transforms-3/1b20199aa2845fc653d0901d2cedc728/transformed/lifecycle-runtime-2.3.1/res
+com.neuro.engine.app-jetified-core-ktx-1.10.1-1 /root/.gradle/caches/transforms-3/c4d8b1e594720e4bd5f705079743fc58/transformed/jetified-core-ktx-1.10.1/res
+com.neuro.engine.app-jetified-annotation-experimental-1.3.0-2 /root/.gradle/caches/transforms-3/d2e91df84b0d191a48dc25673ae47f28/transformed/jetified-annotation-experimental-1.3.0/res
+com.neuro.engine.app-core-1.10.1-3 /root/.gradle/caches/transforms-3/fab6a810a26623ea2485d71c61dd0bd7/transformed/core-1.10.1/res
+com.neuro.engine.app-pngs-4 /root/neuro_engine/app/build/generated/res/pngs/debug
+com.neuro.engine.app-resValues-5 /root/neuro_engine/app/build/generated/res/resValues/debug
+com.neuro.engine.app-packageDebugResources-6 /root/neuro_engine/app/build/intermediates/incremental/debug/packageDebugResources/merged.dir
+com.neuro.engine.app-packageDebugResources-7 /root/neuro_engine/app/build/intermediates/incremental/debug/packageDebugResources/stripped.dir
+com.neuro.engine.app-merged_res-8 /root/neuro_engine/app/build/intermediates/merged_res/debug
+com.neuro.engine.app-debug-9 /root/neuro_engine/app/src/debug/res
+com.neuro.engine.app-main-10 /root/neuro_engine/app/src/main/res

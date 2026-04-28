@@ -1,0 +1,114 @@
+CMake Deprecation Warning at /opt/android-sdk/ndk/25.1.8937393/build/cmake/android.toolchain.cmake:34 (cmake_minimum_required):
+  Compatibility with CMake < 3.10 will be removed from a future version of
+  CMake.
+
+  Update the VERSION argument <min> value.  Or, use the <min>...<max> syntax
+  to tell CMake that the project requires at least <min> but has been updated
+  to work with policies introduced by <max> or earlier.
+Call Stack (most recent call first):
+  /usr/share/cmake-3.31/Modules/CMakeDetermineSystem.cmake:146 (include)
+  CMakeLists.txt:2 (project)
+
+
+CMake Deprecation Warning at /opt/android-sdk/ndk/25.1.8937393/build/cmake/android-legacy.toolchain.cmake:34 (cmake_minimum_required):
+  Compatibility with CMake < 3.10 will be removed from a future version of
+  CMake.
+
+  Update the VERSION argument <min> value.  Or, use the <min>...<max> syntax
+  to tell CMake that the project requires at least <min> but has been updated
+  to work with policies introduced by <max> or earlier.
+Call Stack (most recent call first):
+  /opt/android-sdk/ndk/25.1.8937393/build/cmake/android.toolchain.cmake:54 (include)
+  /usr/share/cmake-3.31/Modules/CMakeDetermineSystem.cmake:146 (include)
+  CMakeLists.txt:2 (project)
+
+
+CMake Deprecation Warning at /opt/android-sdk/ndk/25.1.8937393/build/cmake/android.toolchain.cmake:34 (cmake_minimum_required):
+  Compatibility with CMake < 3.10 will be removed from a future version of
+  CMake.
+
+  Update the VERSION argument <min> value.  Or, use the <min>...<max> syntax
+  to tell CMake that the project requires at least <min> but has been updated
+  to work with policies introduced by <max> or earlier.
+Call Stack (most recent call first):
+  /root/neuro_engine/app/.cxx/Debug/266q5h5v/arm64-v8a/CMakeFiles/3.31.6/CMakeSystem.cmake:6 (include)
+  CMakeLists.txt:2 (project)
+
+
+CMake Deprecation Warning at /opt/android-sdk/ndk/25.1.8937393/build/cmake/android.toolchain.cmake:34 (cmake_minimum_required):
+  Compatibility with CMake < 3.10 will be removed from a future version of
+  CMake.
+
+  Update the VERSION argument <min> value.  Or, use the <min>...<max> syntax
+  to tell CMake that the project requires at least <min> but has been updated
+  to work with policies introduced by <max> or earlier.
+Call Stack (most recent call first):
+  /root/neuro_engine/app/.cxx/Debug/266q5h5v/arm64-v8a/CMakeFiles/3.31.6/CMakeSystem.cmake:6 (include)
+  /root/neuro_engine/app/.cxx/Debug/266q5h5v/arm64-v8a/CMakeFiles/CMakeScratch/TryCompile-bQRbby/CMakeLists.txt:2 (project)
+
+
+CMake Deprecation Warning at /opt/android-sdk/ndk/25.1.8937393/build/cmake/android-legacy.toolchain.cmake:34 (cmake_minimum_required):
+  Compatibility with CMake < 3.10 will be removed from a future version of
+  CMake.
+
+  Update the VERSION argument <min> value.  Or, use the <min>...<max> syntax
+  to tell CMake that the project requires at least <min> but has been updated
+  to work with policies introduced by <max> or earlier.
+Call Stack (most recent call first):
+  /opt/android-sdk/ndk/25.1.8937393/build/cmake/android.toolchain.cmake:54 (include)
+  /root/neuro_engine/app/.cxx/Debug/266q5h5v/arm64-v8a/CMakeFiles/3.31.6/CMakeSystem.cmake:6 (include)
+  /root/neuro_engine/app/.cxx/Debug/266q5h5v/arm64-v8a/CMakeFiles/CMakeScratch/TryCompile-bQRbby/CMakeLists.txt:2 (project)
+
+
+CMake Deprecation Warning at /opt/android-sdk/ndk/25.1.8937393/build/cmake/android.toolchain.cmake:34 (cmake_minimum_required):
+  Compatibility with CMake < 3.10 will be removed from a future version of
+  CMake.
+
+  Update the VERSION argument <min> value.  Or, use the <min>...<max> syntax
+  to tell CMake that the project requires at least <min> but has been updated
+  to work with policies introduced by <max> or earlier.
+Call Stack (most recent call first):
+  /root/neuro_engine/app/.cxx/Debug/266q5h5v/arm64-v8a/CMakeFiles/3.31.6/CMakeSystem.cmake:6 (include)
+  /root/neuro_engine/app/.cxx/Debug/266q5h5v/arm64-v8a/CMakeFiles/CMakeScratch/TryCompile-H0xLjq/CMakeLists.txt:2 (project)
+
+
+CMake Deprecation Warning at /opt/android-sdk/ndk/25.1.8937393/build/cmake/android-legacy.toolchain.cmake:34 (cmake_minimum_required):
+  Compatibility with CMake < 3.10 will be removed from a future version of
+  CMake.
+
+  Update the VERSION argument <min> value.  Or, use the <min>...<max> syntax
+  to tell CMake that the project requires at least <min> but has been updated
+  to work with policies introduced by <max> or earlier.
+Call Stack (most recent call first):
+  /opt/android-sdk/ndk/25.1.8937393/build/cmake/android.toolchain.cmake:54 (include)
+  /root/neuro_engine/app/.cxx/Debug/266q5h5v/arm64-v8a/CMakeFiles/3.31.6/CMakeSystem.cmake:6 (include)
+  /root/neuro_engine/app/.cxx/Debug/266q5h5v/arm64-v8a/CMakeFiles/CMakeScratch/TryCompile-H0xLjq/CMakeLists.txt:2 (project)
+
+
+CMake Error at /usr/share/cmake-3.31/Modules/CMakeTestCCompiler.cmake:67 (message):
+  The C compiler
+
+    "/opt/android-sdk/ndk/25.1.8937393/toolchains/llvm/prebuilt/linux-x86_64/bin/clang"
+
+  is not able to compile a simple test program.
+
+  It fails with the following output:
+
+    Change Dir: '/root/neuro_engine/app/.cxx/Debug/266q5h5v/arm64-v8a/CMakeFiles/CMakeScratch/TryCompile-H0xLjq'
+    
+    Run Build Command(s): /opt/android-sdk/cmake/3.22.1/bin/ninja -v cmTC_97013
+    [1/2] /opt/android-sdk/ndk/25.1.8937393/toolchains/llvm/prebuilt/linux-x86_64/bin/clang   -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security -o CMakeFiles/cmTC_97013.dir/testCCompiler.c.o -c /root/neuro_engine/app/.cxx/Debug/266q5h5v/arm64-v8a/CMakeFiles/CMakeScratch/TryCompile-H0xLjq/testCCompiler.c
+    FAILED: CMakeFiles/cmTC_97013.dir/testCCompiler.c.o 
+    /opt/android-sdk/ndk/25.1.8937393/toolchains/llvm/prebuilt/linux-x86_64/bin/clang   -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security -o CMakeFiles/cmTC_97013.dir/testCCompiler.c.o -c /root/neuro_engine/app/.cxx/Debug/266q5h5v/arm64-v8a/CMakeFiles/CMakeScratch/TryCompile-H0xLjq/testCCompiler.c
+    /bin/sh: 1: /opt/android-sdk/ndk/25.1.8937393/toolchains/llvm/prebuilt/linux-x86_64/bin/clang: not found
+    ninja: build stopped: subcommand failed.
+    
+    
+
+  
+
+  CMake will not be able to correctly generate this project.
+Call Stack (most recent call first):
+  CMakeLists.txt:2 (project)
+
+
