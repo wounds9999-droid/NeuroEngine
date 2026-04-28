@@ -1,0 +1,28 @@
+name: NeuroEngine Native Compile
+on: [push]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up JDK 17
+      uses: actions/setup-java@v3
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+    - name: Install NDK & CMake
+      run: echo "y" | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --install "ndk;25.2.9519653" "cmake;3.22.1"
+    - name: Download NCNN Core
+      run: |
+        cd app/src/main/cpp
+        wget https://github.com/Tencent/ncnn/releases/download/20231027/ncnn-20231027-android-vulkan.zip -O ncnn.zip
+        unzip -q ncnn.zip && rm ncnn.zip && mv ncnn-20231027-android-vulkan ncnn
+    - name: Build APK
+      run: |
+        chmod +x gradlew
+        ./gradlew assembleDebug
+    - name: Upload APK
+      uses: actions/upload-artifact@v3
+      with:
+        name: NeuroEngine-App
+        path: app/build/outputs/apk/debug/app-debug.apk
