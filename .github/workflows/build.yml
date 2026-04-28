@@ -17,11 +17,11 @@ jobs:
         cd app/src/main/cpp
         wget https://github.com/Tencent/ncnn/releases/download/20231027/ncnn-20231027-android-vulkan.zip -O ncnn.zip
         unzip -q ncnn.zip && rm ncnn.zip && mv ncnn-20231027-android-vulkan ncnn
-    - name: Failsafe Build Execution
+    - name: Nuclear Override - Manual Gradle 8.2 Injection
       run: |
-        gradle wrapper --gradle-version 8.2
-        chmod +x gradlew
-        ./gradlew assembleDebug --stacktrace
+        wget https://services.gradle.org/distributions/gradle-8.2-bin.zip
+        unzip -q gradle-8.2-bin.zip -d /tmp
+        /tmp/gradle-8.2/bin/gradle assembleDebug --stacktrace
     - name: Upload APK
       uses: actions/upload-artifact@v4
       with:
