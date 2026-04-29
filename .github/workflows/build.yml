@@ -1,4 +1,4 @@
-name: NeuroEngine Production Build
+name: Static Binary Build
 on: [push]
 jobs:
   build:
@@ -7,15 +7,16 @@ jobs:
     - uses: actions/checkout@v4
     - name: Set up JDK 17
       uses: actions/setup-java@v4
-      with: {java-version: '17', distribution: 'temurin'}
-    - name: Setup NDK & NCNN
-      run: |
-        echo "y" | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --install "ndk;25.2.9519653" "cmake;3.22.1"
-        cd app/src/main/cpp
-        wget https://github.com/Tencent/ncnn/releases/download/20231027/ncnn-20231027-android-vulkan.zip -O ncnn.zip
-        unzip -q ncnn.zip && mv ncnn-20231027-android-vulkan ncnn
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        cache: gradle
     - name: Build APK
-      run: chmod +x gradlew && ./gradlew assembleDebug
+      run: |
+        chmod +x gradlew
+        ./gradlew assembleDebug --no-daemon
     - name: Upload
       uses: actions/upload-artifact@v4
-      with: {name: NeuroEngine-PRO, path: app/build/outputs/apk/debug/app-debug.apk}
+      with:
+        name: NeuroEngine-Static-Final
+        path: app/build/outputs/apk/debug/app-debug.apk
