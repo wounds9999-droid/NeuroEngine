@@ -1,13 +1,12 @@
 package com.neuro.engine;
 
-import android.Manifest;
-import android.content.pm.PackageManager;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.widget.TextView;
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 
 public class MainActivity extends AppCompatActivity {
     private TextView statusText;
@@ -16,29 +15,43 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        
         statusText = findViewById(R.id.statusText);
 
-        // طلب صلاحية الكاميرا أول ما يفتح التطبيق
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, 100);
+        checkOverlayPermission();
+    }
+
+    private void checkOverlayPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (!Settings.canDrawOverlays(this)) {
+                statusText.setText("مطلوب إذن الظهور فوق التطبيقات (Overlay)");
+                Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                        Uri.parse("package:" + getPackageName()));
+                startActivityForResult(intent, 200);
+            } else {
+                engineReady();
+            }
         } else {
-            startEngine();
+            engineReady();
         }
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == 100 && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            startEngine();
-        } else {
-            statusText.setText("تم رفض الصلاحية!\nالمحرك يحتاج الكاميرا للعمل.");
-            statusText.setTextColor(0xFFFF0000); // لون أحمر
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 200) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                if (Settings.canDrawOverlays(this)) {
+                    engineReady();
+                } else {
+                    statusText.setText("تم رفض الإذن! لا يمكن رسم الرادار.");
+                    statusText.setTextColor(0xFFFF0000);
+                }
+            }
         }
     }
 
-    private void startEngine() {
-        statusText.setText("NeuroEngine: ACTIVE\n[ C++ Core Linked ]\nجاهز للربط مع ببجي");
+    private void engineReady() {
+        statusText.setText("Overlay Granted\n[ Vision System Ready ]\nجاهز لتصوير الشاشة");
+        statusText.setTextColor(0xFF00FF00);
     }
 }
