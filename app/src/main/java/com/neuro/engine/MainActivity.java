@@ -32,17 +32,15 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 200) {
             checkPermissions();
-        } else if (requestCode == 300 && resultCode == RESULT_OK && data != null) {
+        } else if (requestCode == 300 && resultCode == RESULT_OK) {
             Intent serviceIntent = new Intent(this, VisionService.class);
-            serviceIntent.putExtra("code", resultCode);
-            serviceIntent.putExtra("data", data); // إرسال بيانات التصوير للخدمة
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 startForegroundService(serviceIntent);
             } else {
                 startService(serviceIntent);
             }
-            // إغلاق الواجهة بعد نجاح التشغيل لتقليل الحمل
-            finish();
+            // السحر هنا: نرسل التطبيق للخلفية بهدوء بدل إغلاقه بقوة
+            moveTaskToBack(true);
         }
     }
 }
