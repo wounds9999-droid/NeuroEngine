@@ -15,9 +15,9 @@ jobs:
         cd app/src/main/cpp
         wget https://github.com/Tencent/ncnn/releases/download/20231027/ncnn-20231027-android-vulkan.zip -O ncnn.zip
         unzip -q ncnn.zip && mv ncnn-20231027-android-vulkan ncnn
-    - name: Build APK (Self-Healing Gradle)
+    - name: Build APK (Forced Gradle 8.4)
       run: |
-        if [ ! -f gradlew ]; then gradle wrapper; fi
+        gradle wrapper --gradle-version 8.4
         chmod +x gradlew
         ./gradlew assembleDebug --no-daemon
     - name: Upload
