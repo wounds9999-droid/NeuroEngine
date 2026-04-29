@@ -1,22 +1,28 @@
-name: Static Binary Build
+name: NeuroEngine Final Push
 on: [push]
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
-    - name: Set up JDK 17
+    - name: Java Setup
       uses: actions/setup-java@v4
       with:
         java-version: '17'
         distribution: 'temurin'
-        cache: gradle
-    - name: Build APK
+    - name: NDK Setup
+      run: echo "y" | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --install "ndk;25.2.9519653" "cmake;3.22.1"
+    - name: Static Library Injector
+      run: |
+        cd app/src/main/cpp
+        wget https://github.com/Tencent/ncnn/releases/download/20231027/ncnn-20231027-android-vulkan.zip -O ncnn.zip
+        unzip -q ncnn.zip && mv ncnn-20231027-android-vulkan ncnn
+    - name: Build Final APK
       run: |
         chmod +x gradlew
         ./gradlew assembleDebug --no-daemon
-    - name: Upload
+    - name: Upload Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: NeuroEngine-Static-Final
+        name: NeuroEngine-PRO-Edition
         path: app/build/outputs/apk/debug/app-debug.apk
