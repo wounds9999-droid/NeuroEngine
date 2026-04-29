@@ -1,23 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#000000"
-    android:gravity="center"
-    android:orientation="vertical">
-    <TextView
-        android:layout_width="wrap_content"
+    android:background="#050505"
+    android:padding="20dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="NEURO ENGINE"
-        android:textColor="#00FF00"
-        android:textSize="30sp"
-        android:textStyle="bold" />
-    <Button
-        android:id="@+id/startBtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:text="START RADAR"
-        android:backgroundTint="#00FF00"
-        android:textColor="#000000" />
-</LinearLayout>
+        android:layout_centerInParent="true"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="NEURO ENGINE"
+            android:textColor="#00FF44"
+            android:textSize="36sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/ver"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="ULTRA STABLE V10"
+            android:textColor="#006622"
+            android:textSize="12sp"
+            android:letterSpacing="0.2" />
+
+        <ProgressBar
+            android:id="@+id/loader"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="250dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:indeterminate="true"
+            android:indeterminateTint="#00FF44"
+            android:visibility="invisible" />
+
+        <Button
+            android:id="@+id/startBtn"
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:layout_marginTop="20dp"
+            android:backgroundTint="#111111"
+            android:text="ACTIVATE NEURAL LINK"
+            android:textColor="#00FF44"
+            android:textStyle="bold"
+            android:elevation="10dp" />
+
+    </LinearLayout>
+</RelativeLayout>

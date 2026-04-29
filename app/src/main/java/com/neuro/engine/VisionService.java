@@ -8,43 +8,45 @@ import android.media.projection.MediaProjection;
 import android.media.projection.MediaProjectionManager;
 import android.os.Build;
 import android.os.IBinder;
+import android.view.Surface;
+import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.WindowManager;
 
 public class VisionService extends Service {
     private WindowManager wm;
     private SurfaceView overlay;
-    private MediaProjection mProjection;
-    private boolean isRunning = false;
+    private MediaProjection projection;
+    private volatile boolean isRunning = false;
+    private Thread renderThread;
 
     static { System.loadLibrary("neuro_engine"); }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (intent == null) return START_NOT_STICKY;
-        
+
         setupNotification();
         
-        int resCode = intent.getIntExtra("resCode", 0);
-        Intent resData = intent.getParcelableExtra("resData");
+        int code = intent.getIntExtra("code", -1);
+        Intent data = intent.getParcelableExtra("data");
 
-        if (resData != null && !isRunning) {
+        if (data != null && !isRunning) {
             MediaProjectionManager mpm = (MediaProjectionManager) getSystemService(MEDIA_PROJECTION_SERVICE);
-            mProjection = mpm.getMediaProjection(resCode, resData);
+            projection = mpm.getMediaProjection(code, data);
             initOverlay();
-            isRunning = true;
         }
         return START_STICKY;
     }
 
     private void setupNotification() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel chan = new NotificationChannel("N", "NeuroCore", NotificationManager.IMPORTANCE_LOW);
-            getSystemService(NotificationManager.class).createNotificationChannel(chan);
-            Notification n = new Notification.Builder(this, "N")
-                .setContentTitle("NeuroEngine Pro")
-                .setContentText("AI Vision Core Active")
-                .setSmallIcon(android.R.drawable.ic_lock_idle_low_battery).build();
+            NotificationChannel c = new NotificationChannel("U", "UltraCore", NotificationManager.IMPORTANCE_LOW);
+            getSystemService(NotificationManager.class).createNotificationChannel(c);
+            Notification n = new Notification.Builder(this, "U")
+                .setContentTitle("NEURO ENGINE ACTIVE")
+                .setContentText("Neural Vision Stream Online")
+                .setSmallIcon(android.R.drawable.ic_dialog_info).build();
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 startForeground(1, n, ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION);
             } else {
@@ -66,17 +68,34 @@ public class VisionService extends Service {
             PixelFormat.TRANSLUCENT
         );
 
+        overlay.getHolder().addCallback(new SurfaceHolder.Callback() {
+            @Override
+            public void surfaceCreated(SurfaceHolder h) {
+                isRunning = true;
+                renderThread = new Thread(() -> {
+                    Surface s = h.getSurface();
+                    while (isRunning) {
+                        nativeRender(s);
+                        try { Thread.sleep(8); } catch (Exception e) { Thread.currentThread().interrupt(); }
+                    }
+                });
+                renderThread.setPriority(Thread.MAX_PRIORITY);
+                renderThread.start();
+            }
+            @Override public void surfaceChanged(SurfaceHolder h, int f, int w, int h2) {}
+            @Override public void surfaceDestroyed(SurfaceHolder h) { isRunning = false; }
+        });
         wm.addView(overlay, p);
-        new Thread(this::coreLoop).start();
     }
 
-    private void coreLoop() {
-        while (isRunning) {
-            processFrame(overlay.getHolder().getSurface());
-            try { Thread.sleep(8); } catch (Exception ignored) {}
-        }
-    }
+    public native void nativeRender(Surface s);
+    @Override public IBinder onBind(Intent i) { return null; }
 
-    public native void processFrame(android.view.Surface s);
-    @Override public IBinder onBind(Intent intent) { return null; }
+    @Override
+    public void onDestroy() {
+        isRunning = false;
+        if (wm != null && overlay != null) wm.removeView(overlay);
+        if (projection != null) projection.stop();
+        super.onDestroy();
+    }
 }

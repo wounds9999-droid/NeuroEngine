@@ -1,16 +1,21 @@
-plugins { id 'com.android.application'; id 'org.jetbrains.kotlin.android' }
+plugins { id 'com.android.application' }
 android {
     namespace 'com.neuro.engine'
     compileSdk 34
     defaultConfig {
         applicationId "com.neuro.engine"
         minSdk 24
-        targetSdk 33  // السر هنا: هذا الرقم يمنع أندرويد 14 من تدمير التطبيق
-        versionCode 6
-        versionName "6.0-STABLE"
-        externalNativeBuild { cmake { cppFlags "-std=c++17 -O3"; arguments "-DANDROID_STL=c++_shared"; abiFilters "arm64-v8a" } }
+        targetSdk 33
+        versionCode 10
+        versionName "10.0-ULTRA"
+        externalNativeBuild { cmake { cppFlags "-std=c++17 -O3 -fvisibility=hidden"; abiFilters "arm64-v8a" } }
+    }
+    buildTypes {
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt')
+        }
     }
     externalNativeBuild { cmake { path "src/main/cpp/CMakeLists.txt"; version "3.22.1" } }
-    compileOptions { sourceCompatibility JavaVersion.VERSION_17; targetCompatibility JavaVersion.VERSION_17 }
 }
 dependencies { implementation 'androidx.appcompat:appcompat:1.6.1' }
