@@ -1,6 +1,7 @@
 package com.neuro.engine;
-
+import android.content.Context;
 import android.content.Intent;
+import android.media.projection.MediaProjectionManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -10,48 +11,30 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity {
     private TextView statusText;
-
+    private MediaProjectionManager mpm;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         statusText = findViewById(R.id.statusText);
-
-        checkOverlayPermission();
+        mpm = (MediaProjectionManager) getSystemService(Context.MEDIA_PROJECTION_SERVICE);
+        checkPermissions();
     }
-
-    private void checkOverlayPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (!Settings.canDrawOverlays(this)) {
-                statusText.setText("مطلوب إذن الظهور فوق التطبيقات (Overlay)");
-                Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                        Uri.parse("package:" + getPackageName()));
-                startActivityForResult(intent, 200);
-            } else {
-                engineReady();
-            }
+    private void checkPermissions() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(this)) {
+            startActivityForResult(new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + getPackageName())), 200);
         } else {
-            engineReady();
+            startActivityForResult(mpm.createScreenCaptureIntent(), 300);
         }
     }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 200) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                if (Settings.canDrawOverlays(this)) {
-                    engineReady();
-                } else {
-                    statusText.setText("تم رفض الإذن! لا يمكن رسم الرادار.");
-                    statusText.setTextColor(0xFFFF0000);
-                }
-            }
+        if (requestCode == 300 && resultCode == RESULT_OK) {
+            Intent intent = new Intent(this, VisionService.class);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) startForegroundService(intent);
+            else startService(intent);
+            statusText.setText("NeuroEngine: ACTIVE");
         }
-    }
-
-    private void engineReady() {
-        statusText.setText("Overlay Granted\n[ Vision System Ready ]\nجاهز لتصوير الشاشة");
-        statusText.setTextColor(0xFF00FF00);
     }
 }

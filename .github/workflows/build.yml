@@ -5,28 +5,21 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
-    
-    - name: Java Setup
+    - name: Java
       uses: actions/setup-java@v4
       with: {java-version: '17', distribution: 'temurin'}
-      
-    - name: NDK Setup
+    - name: NDK
       run: echo "y" | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --install "ndk;25.2.9519653" "cmake;3.22.1"
-      
-    - name: Library Injector
+    - name: NCNN
       run: |
         cd app/src/main/cpp
         wget https://github.com/Tencent/ncnn/releases/download/20231027/ncnn-20231027-android-vulkan.zip -O ncnn.zip
         unzip -q ncnn.zip && mv ncnn-20231027-android-vulkan ncnn
-        
-    - name: Setup Official Gradle 8.4
+    - name: Gradle 8.4
       uses: gradle/actions/setup-gradle@v3
-      with:
-        gradle-version: '8.4'
-        
-    - name: Build APK (Bypass Wrapper)
+      with: {gradle-version: '8.4'}
+    - name: Build
       run: gradle assembleDebug --no-daemon
-      
     - name: Upload
       uses: actions/upload-artifact@v4
       with: {name: NeuroEngine-PRO, path: app/build/outputs/apk/debug/app-debug.apk}
