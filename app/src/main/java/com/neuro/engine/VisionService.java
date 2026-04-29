@@ -17,18 +17,18 @@ import android.view.WindowManager;
 public class VisionService extends Service {
     private WindowManager wm;
     private SurfaceView overlay;
+    private boolean isEngineRunning = false;
 
     static { System.loadLibrary("neuro_engine"); }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        // إنشاء إشعار الخدمة الخلفية
+        if (intent == null) return START_NOT_STICKY;
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel chan = new NotificationChannel("V", "Vision", NotificationManager.IMPORTANCE_LOW);
             getSystemService(NotificationManager.class).createNotificationChannel(chan);
             Notification notif = new Notification.Builder(this, "V").setContentTitle("NeuroEngine Active").build();
-            
-            // السر هنا: إضافة ختم أندرويد 14 عشان ما يكرش
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 startForeground(1, notif, ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION);
             } else {
@@ -36,16 +36,19 @@ public class VisionService extends Service {
             }
         }
 
-        // تحميل الذكاء الاصطناعي وإعداد الشاشة
-        if (wm == null) {
+        if (!isEngineRunning) {
             loadModel(getAssets());
             wm = (WindowManager) getSystemService(WINDOW_SERVICE);
             overlay = new SurfaceView(this);
             overlay.setZOrderOnTop(true);
             overlay.getHolder().setFormat(PixelFormat.TRANSLUCENT);
 
+            // تحديد أبعاد الشاشة لمنع تعارض النظام
+            int width = wm.getDefaultDisplay().getWidth();
+            int height = wm.getDefaultDisplay().getHeight();
+
             WindowManager.LayoutParams p = new WindowManager.LayoutParams(
-                WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT,
+                width, height,
                 Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ? WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY : WindowManager.LayoutParams.TYPE_PHONE,
                 WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE | WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,
                 PixelFormat.TRANSLUCENT
@@ -57,16 +60,17 @@ public class VisionService extends Service {
                 @Override public void surfaceDestroyed(SurfaceHolder h) {}
             });
             wm.addView(overlay, p);
+            isEngineRunning = true;
         }
         return START_STICKY;
     }
 
     private void startLoop(android.view.Surface s) {
         new Thread(() -> {
-            float enemyX = 1000f; 
+            float enemyX = 500f; 
             float enemyY = 500f;
             while(true) {
-                processFrame(s, enemyX, enemyY, 150f, 300f); 
+                processFrame(s, enemyX, enemyY, 200f, 400f); 
                 try { Thread.sleep(16); } catch(Exception e) {} 
             }
         }).start();
