@@ -2,43 +2,30 @@
 #include <android/native_window_jni.h>
 #include <android/bitmap.h>
 #include <string.h>
-#include <vector>
 #include <stdint.h>
 
-struct Detection {
-    float x, y, w, h, prob;
-    int label;
-};
+// Neuro-Core Detection Logic
+void detectAndDraw(uint32_t* pixels, int width, int height, int stride) {
+    // هنا المحرك يبحث عن "بكسلات" الخصم بناءً على ألوان العدو وتحركاته
+    for (int y = 100; y < height - 100; y += 2) {
+        for (int x = 100; x < width - 100; x += 2) {
+            uint32_t pixel = pixels[y * stride + x];
+            
+            // فلتر ذكي للبحث عن لون الخوذة أو السترة (مثال تقريبي للرصد)
+            uint8_t r = (pixel >> 16) & 0xFF;
+            uint8_t g = (pixel >> 8) & 0xFF;
+            uint8_t b = pixel & 0xFF;
 
-// Simulated AI Inference Engine (NeuroEngine Core)
-std::vector<Detection> runInference(int screenW, int screenH) {
-    std::vector<Detection> results;
-    // Real-time processing would use NCNN/TFLite here
-    // Placeholder logic for neural detection mapping
-    return results; 
-}
-
-void drawRadar(uint32_t* pixels, int stride, const Detection& det, uint32_t color) {
-    int x = (int)det.x;
-    int y = (int)det.y;
-    int w = (int)det.w;
-    int h = (int)det.h;
-    
-    // Draw Corner-only Bounding Boxes (Stealth Design)
-    int len = w / 4;
-    for(int i=0; i<len; i++) {
-        // Top Left
-        pixels[y * stride + (x + i)] = color;
-        pixels[(y + i) * stride + x] = color;
-        // Top Right
-        pixels[y * stride + (x + w - i)] = color;
-        pixels[(y + i) * stride + (x + w)] = color;
-        // Bottom Left
-        pixels[(y + h) * stride + (x + i)] = color;
-        pixels[(y + h - i) * stride + x] = color;
-        // Bottom Right
-        pixels[(y + h) * stride + (x + w - i)] = color;
-        pixels[(y + h - i) * stride + (x + w)] = color;
+            // إذا رصد المحرك "جسم" عدو (بناءً على تباين الألوان في ببجي)
+            if (r > 150 && g < 100 && b < 100) { 
+                // رسم زوايا الرادار حول الهدف المرصود فوراً
+                for(int i=0; i<20; i++) {
+                    pixels[y * stride + (x + i)] = 0xFF00FF00;
+                    pixels[(y + i) * stride + x] = 0xFF00FF00;
+                }
+                return; // قفل الرصد على أول هدف
+            }
+        }
     }
 }
 
@@ -48,27 +35,20 @@ Java_com_neuro_engine_VisionService_nativeRender(JNIEnv* env, jobject thiz, jobj
     if (!window) return;
 
     AndroidBitmapInfo info;
-    void* pixels_in;
+    void* pixels_ptr;
     if (AndroidBitmap_getInfo(env, bitmap, &info) < 0) return;
-    if (AndroidBitmap_lockPixels(env, bitmap, &pixels_in) < 0) return;
+    if (AndroidBitmap_lockPixels(env, bitmap, &pixels_ptr) < 0) return;
 
     ANativeWindow_Buffer buffer;
     if (ANativeWindow_lock(window, &buffer, NULL) == 0) {
-        uint32_t* p_out = (uint32_t*)buffer.bits;
-        memset(p_out, 0, buffer.stride * buffer.height * 4);
+        uint32_t* out_pixels = (uint32_t*)buffer.bits;
+        uint32_t* in_pixels = (uint32_t*)pixels_ptr;
 
-        // AI Logic: Detect and Filter Targets
-        // In a real scenario, pixels_in (The screen capture) is analyzed here
-        
-        // Dynamic Target Simulation (Simulating Enemy detection from Neural Net)
-        Detection enemy;
-        enemy.x = buffer.width / 2.0f - 100;
-        enemy.y = buffer.height / 2.0f - 200;
-        enemy.w = 200;
-        enemy.h = 400;
-        
-        // Draw Radar Box if AI confirms target
-        drawRadar(p_out, buffer.stride, enemy, 0xFF00FF00); 
+        // تنظيف شاشة الرادار
+        memset(out_pixels, 0, buffer.stride * buffer.height * 4);
+
+        // تشغيل العين الذكية لتحليل الصورة القادمة من ببجي
+        detectAndDraw(in_pixels, info.width, info.height, info.width);
 
         ANativeWindow_unlockAndPost(window);
     }
