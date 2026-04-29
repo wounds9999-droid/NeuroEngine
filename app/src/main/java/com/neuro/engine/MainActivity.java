@@ -28,6 +28,8 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK && requestCode == 300) {
             Intent intent = new Intent(this, VisionService.class);
+            intent.putExtra("resultCode", resultCode);
+            intent.putExtra("data", data);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 startForegroundService(intent);
             } else {

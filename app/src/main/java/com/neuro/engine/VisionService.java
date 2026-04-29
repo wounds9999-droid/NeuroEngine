@@ -1,12 +1,11 @@
 package com.neuro.engine;
 
-import android.app.Notification;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.app.Service;
+import android.app.*;
 import android.content.Intent;
 import android.content.pm.ServiceInfo;
 import android.graphics.PixelFormat;
+import android.media.projection.MediaProjection;
+import android.media.projection.MediaProjectionManager;
 import android.os.Build;
 import android.os.IBinder;
 import android.view.SurfaceView;
@@ -15,27 +14,42 @@ import android.view.WindowManager;
 public class VisionService extends Service {
     private WindowManager wm;
     private SurfaceView overlay;
+    private MediaProjection mProjection;
 
     static { System.loadLibrary("neuro_engine"); }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel chan = new NotificationChannel("V", "Engine", NotificationManager.IMPORTANCE_HIGH);
-            getSystemService(NotificationManager.class).createNotificationChannel(chan);
-            Notification notif = new Notification.Builder(this, "V")
-                .setContentTitle("NeuroEngine")
-                .setContentText("Engine is running...")
-                .setSmallIcon(android.R.drawable.ic_dialog_info)
-                .build();
-            
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                startForeground(1, notif, ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION);
-            } else {
-                startForeground(1, notif);
+        if (intent != null) {
+            int resultCode = intent.getIntExtra("resultCode", 0);
+            Intent data = intent.getParcelableExtra("data");
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                NotificationChannel chan = new NotificationChannel("V", "Engine", NotificationManager.IMPORTANCE_HIGH);
+                getSystemService(NotificationManager.class).createNotificationChannel(chan);
+                Notification notif = new Notification.Builder(this, "V")
+                    .setContentTitle("NeuroEngine")
+                    .setContentText("AI Engine is Active")
+                    .setSmallIcon(android.R.drawable.ic_dialog_info)
+                    .build();
+                
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    startForeground(1, notif, ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION);
+                } else {
+                    startForeground(1, notif);
+                }
+            }
+
+            if (data != null && mProjection == null) {
+                MediaProjectionManager mpm = (MediaProjectionManager) getSystemService(MEDIA_PROJECTION_SERVICE);
+                mProjection = mpm.getMediaProjection(resultCode, data);
+                setupOverlay();
             }
         }
+        return START_STICKY;
+    }
 
+    private void setupOverlay() {
         if (wm == null) {
             wm = (WindowManager) getSystemService(WINDOW_SERVICE);
             overlay = new SurfaceView(this);
@@ -51,13 +65,12 @@ public class VisionService extends Service {
 
             wm.addView(overlay, p);
             new Thread(() -> {
-                while(true) {
+                while(mProjection != null) {
                     processFrame(overlay.getHolder().getSurface());
-                    try { Thread.sleep(16); } catch(Exception e) {}
+                    try { Thread.sleep(8); } catch(Exception e) {}
                 }
             }).start();
         }
-        return START_STICKY;
     }
 
     public native void processFrame(android.view.Surface s);
