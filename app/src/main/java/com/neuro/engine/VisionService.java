@@ -3,11 +3,16 @@ package com.neuro.engine;
 import android.app.*;
 import android.content.Intent;
 import android.content.pm.ServiceInfo;
+import android.graphics.Bitmap;
 import android.graphics.PixelFormat;
+import android.hardware.display.DisplayManager;
+import android.hardware.display.VirtualDisplay;
+import android.media.ImageReader;
 import android.media.projection.MediaProjection;
 import android.media.projection.MediaProjectionManager;
 import android.os.Build;
 import android.os.IBinder;
+import android.util.DisplayMetrics;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -17,23 +22,19 @@ public class VisionService extends Service {
     private WindowManager wm;
     private SurfaceView overlay;
     private MediaProjection projection;
+    private VirtualDisplay virtualDisplay;
+    private ImageReader imageReader;
     private volatile boolean isRunning = false;
-    private Thread renderThread;
-
     static { System.loadLibrary("neuro_engine"); }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        if (intent == null) return START_NOT_STICKY;
-
         setupNotification();
-        
         int code = intent.getIntExtra("code", -1);
         Intent data = intent.getParcelableExtra("data");
-
-        if (data != null && !isRunning) {
-            MediaProjectionManager mpm = (MediaProjectionManager) getSystemService(MEDIA_PROJECTION_SERVICE);
-            projection = mpm.getMediaProjection(code, data);
+        if (data != null) {
+            projection = ((MediaProjectionManager) getSystemService(MEDIA_PROJECTION_SERVICE)).getMediaProjection(code, data);
+            initCapture();
             initOverlay();
         }
         return START_STICKY;
@@ -41,46 +42,46 @@ public class VisionService extends Service {
 
     private void setupNotification() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel c = new NotificationChannel("U", "UltraCore", NotificationManager.IMPORTANCE_LOW);
+            NotificationChannel c = new NotificationChannel("AI", "NeuroAI", NotificationManager.IMPORTANCE_LOW);
             getSystemService(NotificationManager.class).createNotificationChannel(c);
-            Notification n = new Notification.Builder(this, "U")
-                .setContentTitle("NEURO ENGINE ACTIVE")
-                .setContentText("Neural Vision Stream Online")
-                .setSmallIcon(android.R.drawable.ic_dialog_info).build();
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            Notification n = new Notification.Builder(this, "AI")
+                .setContentTitle("NEURO AI ONLINE")
+                .setContentText("Scanning for Targets...")
+                .setSmallIcon(android.R.drawable.ic_menu_view).build();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) 
                 startForeground(1, n, ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION);
-            } else {
-                startForeground(1, n);
-            }
         }
     }
 
-    private void initOverlay() {
+    private void initCapture() {
+        DisplayMetrics metrics = new DisplayMetrics();
         wm = (WindowManager) getSystemService(WINDOW_SERVICE);
+        wm.getDefaultDisplay().getRealMetrics(metrics);
+        imageReader = ImageReader.newInstance(metrics.widthPixels/2, metrics.heightPixels/2, PixelFormat.RGBA_8888, 2);
+        projection.createVirtualDisplay("NeuroScan", metrics.widthPixels/2, metrics.heightPixels/2, metrics.densityDpi,
+                DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR, imageReader.getSurface(), null, null);
+    }
+
+    private void initOverlay() {
         overlay = new SurfaceView(this);
         overlay.setZOrderOnTop(true);
         overlay.getHolder().setFormat(PixelFormat.TRANSLUCENT);
-
         WindowManager.LayoutParams p = new WindowManager.LayoutParams(
             WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT,
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ? WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY : WindowManager.LayoutParams.TYPE_PHONE,
             WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE | WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,
             PixelFormat.TRANSLUCENT
         );
-
         overlay.getHolder().addCallback(new SurfaceHolder.Callback() {
-            @Override
-            public void surfaceCreated(SurfaceHolder h) {
+            @Override public void surfaceCreated(SurfaceHolder h) {
                 isRunning = true;
-                renderThread = new Thread(() -> {
-                    Surface s = h.getSurface();
+                new Thread(() -> {
+                    Bitmap bmp = Bitmap.createBitmap(imageReader.getWidth(), imageReader.getHeight(), Bitmap.Config.ARGB_8888);
                     while (isRunning) {
-                        nativeRender(s);
-                        try { Thread.sleep(8); } catch (Exception e) { Thread.currentThread().interrupt(); }
+                        nativeRender(h.getSurface(), bmp);
+                        try { Thread.sleep(10); } catch (Exception ignored) {}
                     }
-                });
-                renderThread.setPriority(Thread.MAX_PRIORITY);
-                renderThread.start();
+                }).start();
             }
             @Override public void surfaceChanged(SurfaceHolder h, int f, int w, int h2) {}
             @Override public void surfaceDestroyed(SurfaceHolder h) { isRunning = false; }
@@ -88,14 +89,6 @@ public class VisionService extends Service {
         wm.addView(overlay, p);
     }
 
-    public native void nativeRender(Surface s);
+    public native void nativeRender(Surface s, Bitmap b);
     @Override public IBinder onBind(Intent i) { return null; }
-
-    @Override
-    public void onDestroy() {
-        isRunning = false;
-        if (wm != null && overlay != null) wm.removeView(overlay);
-        if (projection != null) projection.stop();
-        super.onDestroy();
-    }
 }
