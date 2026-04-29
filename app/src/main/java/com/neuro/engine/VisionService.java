@@ -12,34 +12,26 @@ import android.os.IBinder;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.WindowManager;
+import java.util.Random;
 
 public class VisionService extends Service {
     private WindowManager wm;
     private SurfaceView overlay;
+    private Random tracker = new Random(); // محاكاة تتبع لغرض التجربة الأولية
 
-    // استدعاء محرك الذكاء الاصطناعي C++
     static { System.loadLibrary("neuro_engine"); }
 
     @Override
     public void onCreate() {
         super.onCreate();
-        
-        // إبقاء التطبيق شغال في الخلفية
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel chan = new NotificationChannel("V", "Vision", NotificationManager.IMPORTANCE_LOW);
             getSystemService(NotificationManager.class).createNotificationChannel(chan);
-            Notification notif = new Notification.Builder(this, "V")
-                .setContentTitle("NeuroEngine")
-                .setContentText("الرادار يعمل الآن...")
-                .setSmallIcon(android.R.drawable.ic_dialog_info)
-                .build();
-            startForeground(1, notif);
+            startForeground(1, new Notification.Builder(this, "V").setContentTitle("NeuroEngine Active").build());
         }
 
-        // تحميل أوزان الذكاء الاصطناعي
         loadModel(getAssets());
 
-        // إعداد الشاشة الشفافة فوق ببجي
         wm = (WindowManager) getSystemService(WINDOW_SERVICE);
         overlay = new SurfaceView(this);
         overlay.setZOrderOnTop(true);
@@ -62,16 +54,21 @@ public class VisionService extends Service {
 
     private void startLoop(android.view.Surface s) {
         new Thread(() -> {
+            // محاكاة إحداثيات العدو في منتصف الشاشة تقريباً للتدريب
+            float enemyX = 1000f; 
+            float enemyY = 500f;
+            
             while(true) {
-                processFrame(s);
-                try { Thread.sleep(8); } catch(Exception e) {} // 120 FPS
+                // في النسخة الكاملة، هنا نستخرج الإحداثيات الحقيقية من الموديل
+                // الآن سنجعل المربع يظهر في الشاشة ليتطابق مع مكان اللاعبين
+                processFrame(s, enemyX, enemyY, 150f, 300f); 
+                try { Thread.sleep(16); } catch(Exception e) {} // 60 FPS
             }
         }).start();
     }
 
-    // دوال الربط مع C++
     public native boolean loadModel(AssetManager mgr);
-    public native void processFrame(android.view.Surface s);
+    public native void processFrame(android.view.Surface s, float x, float y, float w, float h);
 
     @Override public IBinder onBind(Intent i) { return null; }
 }
