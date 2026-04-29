@@ -12,7 +12,7 @@ jobs:
       uses: gradle/actions/setup-gradle@v3
       with: {gradle-version: '8.4'}
     - name: Build APK
-      run: gradle assembleDebug --no-daemon
+      run: gradle :app:assembleDebug --no-daemon
     - name: Upload
       uses: actions/upload-artifact@v4
       with: {name: NeuroEngine-FINAL, path: app/build/outputs/apk/debug/app-debug.apk}
